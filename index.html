@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Unica+One" rel="stylesheet">
+  <script src="js/jquery.plugin.min.js"></script>
+  <script src="js/jquery.countdown.js"></script>
+</head>
+<body>
+  <style>
+  body {
+    background-color: #393D3F;
+    padding-top: 40px;
+  }
+  #items {
+    border-radius: 20px;
+    border: 5px #C98CA7 solid;
+    height: 640px;
+    width: 700px;
+    margin: 0 auto;
+    background-color: #D5BBB1;
+    padding-top: 50px;
+  }
+  #heading {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #393D3F;
+    font-size: 40px;
+    font-weight:600;
+    /*font-family: 'Gloria Hallelujah', cursive;*/
+    font-family: 'Unica One', cursive;
+  }
+  #content {
+
+  }
+  #settings {
+    width: 400px;
+    height: 100px;
+    margin: 0 auto;
+    background-color: #D5BBB1;
+
+  }
+  #workSet {
+    font-size: 30px;
+    font-family: 'Unica One', cursive;
+    font-weight: bold;
+    float: left;
+    text-align: center;
+    padding-left: 1px;
+
+  }
+  #breakSet {
+    font-size: 30px;
+    font-family: 'Unica One', cursive;
+    font-weight: bold;
+    padding-left: 184px;
+    float: left;
+    text-align: center;
+  }
+  .allButtons {
+    background-color: transparent;
+    border: none;
+  }
+  .timer {
+    width: 300px;
+    margin: 0 auto;
+    border-radius: 20px;
+
+    background-color: #D5BBB1;
+    font-family: 'Unica One', cursive;
+    font-weight:600;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 100px;
+    color: #393D3F;
+  }
+  #lowerButtons {
+    height: 100px;
+    width: 150px;
+    background-color: #D5BBB1;
+    margin: 0 auto;
+  }
+  #start {
+    font-family: 'Unica One', cursive;
+    font-weight:600;
+    font-size: 60px;
+    text-align: center;
+  }
+  #pause {
+    font-family: 'Unica One', cursive;
+    font-weight:600;
+    font-size: 40px;
+    text-align: center;
+    margin-left: 15px;
+  }
+
+  button:focus {outline:0;}
+  </style>
+  <script>
+  $(document).ready(function(){
+    var bell = new Audio("bell.mp3");
+    var started = false;
+    var wm = $("#workTime").text();
+    wm = parseInt(wm);
+    var bm = $("#breakTime").text();
+    bm = parseInt(bm);
+    var bt;
+    var timerRunning = false;
+
+
+    $("#workMinus").on("click", function(){
+      wm--;
+      $("#workTime").html(wm);
+      $("#hello").html(wm + ":00");
+    });
+    $("#workPlus").on("click", function(){
+      wm++;
+      $("#workTime").html(wm);
+      $("#hello").html(wm + ":00");
+    });
+    $("#breakMinus").on("click", function(){
+      bm--;
+      $("#breakTime").html(bm);
+    });
+    $("#breakPlus").on("click", function(){
+      bm++;
+      $("#breakTime").html(bm);
+    });
+
+
+
+
+    $("#start").on("click", function(){
+      var wt = "+" + wm.toString() + "m";
+      $("#hello").countdown({
+        until: wt, format: "MS", padZeroes: "true", compact: "true", onExpiry: breakTimer
+      });
+      $('#pause').click(function() {
+        $('#hello').countdown('toggle');
+      });
+      timerRunning = true;
+    })
+
+
+    function breakTimer(){
+      bt = "+" + bm.toString() + "m";
+      bell.play();
+      $("#hello").html("");
+      $("#hello2").countdown({
+        until: bt, format: "MS", padZeroes: "true", compact: "true", onExpiry: breakTimerEnd
+      });
+    }
+    function breakTimerEnd(){
+      bell.play();
+    }
+
+  });
+
+  </script>
+  <div class="container" id=items>
+    <div id="content">
+      <div id="heading">
+        Watch as your productivity levels skyrocket.
+      </div>
+      <div id="settings">
+  <div id="workSet">
+    Work<br/>
+    <button class="allButtons" id="workMinus">-</button>
+    <span id="workTime">
+    25
+  </span>
+    <button class="allButtons" id="workPlus">+</button>
+  </div>
+  <div id="breakSet">
+    Break<br/>
+    <button class="allButtons" id="breakMinus">-</button>
+    <span id="breakTime">
+    5
+  </span>
+    <button class="allButtons" id="breakPlus">+</button>
+  </div>
+</div>
+  <div class="timer" id="hello">
+    25:00
+  </div>
+  <div class="timer" id="hello2">
+
+  </div>
+  <div id="lowerButtons">
+  <button class="allButtons controlButtons" id="start">
+    Start
+  </button>
+  <button class="allButtons controlButtons" id="pause">
+    Pause
+  </button>
+   </div>
+  <!--<button id="reset">
+    Reset
+  </button>-->
+</div>
+</div>
+
+
+</body>
+</html>
