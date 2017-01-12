@@ -41,7 +41,6 @@
     height: 100px;
     margin: 0 auto;
     background-color: #D5BBB1;
-
   }
   #workSet {
     font-size: 30px;
@@ -50,7 +49,6 @@
     float: left;
     text-align: center;
     padding-left: 1px;
-
   }
   #breakSet {
     font-size: 30px;
@@ -68,7 +66,6 @@
     width: 300px;
     margin: 0 auto;
     border-radius: 20px;
-
     background-color: #D5BBB1;
     font-family: 'Unica One', cursive;
     font-weight:600;
@@ -79,32 +76,49 @@
   }
   #lowerButtons {
     height: 100px;
-    width: 150px;
+    width: 500px;
     background-color: #D5BBB1;
     margin: 0 auto;
+    text-align: center;
   }
   #start {
     font-family: 'Unica One', cursive;
     font-weight:600;
     font-size: 60px;
     text-align: center;
+    /*color for once clicked: color:#f2efff;*/
   }
   #pause {
     font-family: 'Unica One', cursive;
     font-weight:600;
     font-size: 40px;
     text-align: center;
-    margin-left: 15px;
   }
-
+  #reset {
+    font-family: 'Unica One', cursive;
+    font-weight:600;
+    font-size: 40px;
+    text-align: center;
+  }
+  footer {
+    width: 500px;
+    margin: 0 auto;
+    text-align: center;
+    font-family: 'Unica One', cursive;
+  }
+  hr {
+    border: 1px #C98CA7 solid;
+  }
   button:focus {outline:0;}
   </style>
   <script>
   $(document).ready(function(){
+    // Ref audio file to be played
     var bell = new Audio("bell.mp3");
-    var started = false;
+    // Assign choice of work time to variable wm and parse to int
     var wm = $("#workTime").text();
     wm = parseInt(wm);
+    // Assign choice of work time to variable bm and parse to int
     var bm = $("#breakTime").text();
     bm = parseInt(bm);
     var bt;
@@ -112,47 +126,107 @@
 
 
     $("#workMinus").on("click", function(){
+      // Decrement value with each click, stopping at 1
       wm--;
-      $("#workTime").html(wm);
-      $("#hello").html(wm + ":00");
+      if (wm < 1) {
+        wm = 1;
+      }
+      else {
+        // Update html elements
+        $("#workTime").html(wm);
+        $("#timer").html(wm + ":00");
+      }
     });
     $("#workPlus").on("click", function(){
+      // Increment value with each click, stopping at 59
       wm++;
-      $("#workTime").html(wm);
-      $("#hello").html(wm + ":00");
+      if (wm > 59){
+        wm = 59;
+      }
+      else {
+        // Update html elements
+        $("#workTime").html(wm);
+        $("#timer").html(wm + ":00");
+    }
     });
     $("#breakMinus").on("click", function(){
+      // Decrement value with each click, stopping at 1
       bm--;
-      $("#breakTime").html(bm);
+      if (bm < 1){
+        bm = 1;
+      }
+      else {
+        $("#breakTime").html(bm);
+      }
     });
     $("#breakPlus").on("click", function(){
+      // Increment value with each click, stopping at 59
       bm++;
-      $("#breakTime").html(bm);
+      if (bm > 59){
+        bm = 59;
+      }
+      else {
+        $("#breakTime").html(bm);
+      }
     });
 
-
-
-
     $("#start").on("click", function(){
+      // Change colour of start button and pause button
+      $(this).css("color", "#f2efff");
+      $("#pause").css("color", "#393D3F");
+      // Assign value of wm to wt
       var wt = "+" + wm.toString() + "m";
-      $("#hello").countdown({
+      if (timerRunning == false){
+      // Assign wt to until in countdown function, run breakTimer function when countdown finishes
+      $("#timer").countdown({
         until: wt, format: "MS", padZeroes: "true", compact: "true", onExpiry: breakTimer
       });
-      $('#pause').click(function() {
-        $('#hello').countdown('toggle');
-      });
       timerRunning = true;
+    }
+    //If the countdown is already running, clicking start resumes it if paused
+    else if (timerRunning == true){
+      $('#timer').countdown('resume');
+      timerRunning = false;
+    }
+    })
+    //Pause buttons toggles between pause and resume
+    $('#pause').click(function() {
+      $('#timer').countdown('toggle');
+      timerRunning = true;
+      //Change colours of pause and start buttons
+      $("#start").css("color", "#393D3F")
+      $(this).css("color", "#f2efff");
+    });
+    //Reset button
+    $("#reset").click(function(){
+      //Change colours of back to start and pause back to default
+      $("#start").css("color", "#393D3F")
+      $("#pause").css("color", "#393D3F");
+      //Destroy original timer
+      $("#timer").countdown('destroy');
+      var wt = "+" + wm.toString() + "m";
+      //Start a new countdown with work time value and then run breakTimer on countdown finish
+      $("#timer").countdown({
+        until: wt, format: "MS", padZeroes: "true", compact: "true", onExpiry: breakTimer
+      });
+      //resetTimerRunning = true;
+
     })
 
 
+    //Function runs when work timer finishes
     function breakTimer(){
+      //Assign break time value to bt
       bt = "+" + bm.toString() + "m";
+      //Play audio file
       bell.play();
-      $("#hello").html("");
-      $("#hello2").countdown({
+      //Destory work countdown and replace with the break counter
+      $("#timer").countdown('destroy');
+      $("#timer").countdown({
         until: bt, format: "MS", padZeroes: "true", compact: "true", onExpiry: breakTimerEnd
       });
     }
+    //When breakTimer finishes, audio file is played again
     function breakTimerEnd(){
       bell.play();
     }
@@ -174,6 +248,7 @@
   </span>
     <button class="allButtons" id="workPlus">+</button>
   </div>
+
   <div id="breakSet">
     Break<br/>
     <button class="allButtons" id="breakMinus">-</button>
@@ -183,24 +258,28 @@
     <button class="allButtons" id="breakPlus">+</button>
   </div>
 </div>
-  <div class="timer" id="hello">
+  <div class="timer" id="timer">
     25:00
   </div>
-  <div class="timer" id="hello2">
-
-  </div>
   <div id="lowerButtons">
+  <button class="allButtons controlButtons" id="pause">
+    Pause
+  </button>
   <button class="allButtons controlButtons" id="start">
     Start
   </button>
-  <button class="allButtons controlButtons" id="pause">
-    Pause
+  <button class="allButtons controlButtons" id="reset">
+    Reset
   </button>
    </div>
   <!--<button id="reset">
     Reset
   </button>-->
 </div>
+<footer>
+  <hr>
+  Coded by <a href="https://github.com/cazwazacz/" target="_blank">Allan Wazacz</a>.
+</footer>
 </div>
 
 
